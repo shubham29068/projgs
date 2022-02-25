@@ -3,6 +3,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+
+const authRouter= require('./routes/auth')
+const userRouter = require('./routes/user')
 // cross origin resource sharing security applied to an api
 const cors = require('cors');
  
@@ -33,5 +36,7 @@ app.use((req,res,next)=>{
 });
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
+app.use('/',authRouter)
+app.use('/user', userRouter)
 
 module.exports = app;

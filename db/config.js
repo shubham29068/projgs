@@ -1,13 +1,13 @@
-const constant = require('../db/config')
+const constant = require('../db/constant')
 module.exports.configure = (mongoose) => {
     // let p = process.argv.find(e => !isNaN(e)) || 27017
     // let p = 27017
     // console.log('MONGOPORT== ', p);
     // let url = `mongodb://admin:${p}/LMS`;
     // let url = 'mongodb://admin:'+encodeURIComponent('aSfhjddFFds')+'@52.243.66.140/lms';
-    let url = `mongodb://localhost:27017/shubDB`
+    // let url = `mongodb://localhost:27017/shubDB`
     let connect = function () {
-        mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true })
+        mongoose.connect(constant.DB_URL, { useUnifiedTopology: true, useNewUrlParser: true })
     }
     connect();
     let db = mongoose.connection;
