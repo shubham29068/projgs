@@ -113,6 +113,8 @@ module.exports = AuthController = function () {
     }
     this.forgetPassword = async (req, res) => {
         try {
+            var val = Math.floor(1000 + Math.random() * 9000);
+            console.log(val);
             req.body.otp = randomString.generate({ length: 4, charset: 'numeric' })
             const validate = await validatorService.schemas.MobForgetPassword.validate(req.body);
             if (validate.error) { throw validate.error.details[0].message };
@@ -128,7 +130,7 @@ module.exports = AuthController = function () {
             LMS Team</p>
             `;
             let subject = `ForgetPassword`
-            await mailService.send({ email: isExist[0].email, html: HTML, subject: subject });
+            let test  = await mailService.send({ email: isExist[0].email, html: HTML, subject: subject });
             return res.status(200).json({ success: true, message: mobileMessages.AUTH_FORGET_PASSWORD/* , data: update  */ });
         } catch (err) {
             console.log('err', err)
