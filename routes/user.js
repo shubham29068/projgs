@@ -6,8 +6,8 @@ const { upload } = require('../service/validator/uploadService');
 const { Auth } = require('../middleware/index');
 
 router.route('/')
-    .get(Auth('isUser'), userController.Get)
-    .put(Auth('isUser'), upload.single('profileImage'), userController.Update);
+    .get(Auth('userverified'), userController.Get)
+    .put(Auth('userverified'), upload.single('profileImage'), userController.Update);
 
 // router.route('/favourite')
 //     .get(Auth('isUser'),userController.Favourite);

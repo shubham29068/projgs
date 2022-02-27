@@ -1,8 +1,22 @@
 
 // const constant = require('../db/constant')
 const multer = require('multer');
-const inMemoryStorage = multer.memoryStorage();
-const upload = multer({ storage: inMemoryStorage });
+const path  = require('path');
+// const inMemoryStorage = multer.memoryStorage();
+// const upload = multer({ storage: inMemoryStorage });
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, 'public/images');
+    },
+    filename: function(req, file, cb) {
+      cb(null, new Date() + file.originalname);
+    }
+  });
+
+  const upload = multer({
+    storage: storage
+})
+  
 const azureStorage = require('azure-storage');
 // const getStream = require("into-stream");
 class UploadService {

@@ -1,9 +1,11 @@
 // ========= services ===========
-// const DbService = require('../services/DB.services');
-// const dbService = new DbService();
+const DbService = require('../service/validator/DbService');
+const dbService = new DbService();
 // ========= NPM packages ===========
 const jwt = require('jsonwebtoken');
-const constant = require('../db/constant')
+const constant = require('../db/constant');
+const { UserModel } = require('../model');
+const { db } = require('../model/user');
 // ========= DB ===========
 // const { UserModel } = require('../models');
 module.exports = (...args) => async (req, res, next) => {
@@ -45,10 +47,17 @@ module.exports = (...args) => async (req, res, next) => {
             req.user = User[0];
             return next();
         }
+        if(args[0]=== 'userverified'){
+            const User = await dbService.find(UserModel, {_id:decodedToken._id})
+            if(!User[0]) throw Error
+            req.user = User[0]
+            return next()
+        }
         throw "Auth Failed"
     } catch (error) {
         res.status(401).json({
             message: "Auth Failed! "
         })
     }
+    
 }
