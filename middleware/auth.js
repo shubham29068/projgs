@@ -3,7 +3,8 @@
 // const dbService = new DbService();
 // ========= NPM packages ===========
 const jwt = require('jsonwebtoken');
-const constant = require('../db/constant')
+const constant = require('../db/constant');
+const { UserModel } = require('../model');
 // ========= DB ===========
 // const { UserModel } = require('../models');
 module.exports = (...args) => async (req, res, next) => {
@@ -13,8 +14,8 @@ module.exports = (...args) => async (req, res, next) => {
         const decodedToken = jwt.verify(token, constant.JWT_SECRET);
         if (args[0] === 'isAdminOrTeacher') {
             // if(decodedToken.role !== "teacher" && decodedToken.role !== "admin") throw Error
-            const User = await dbService.find(UserModel, { _id: decodedToken._id});
-            if(!User[0]) throw Error
+            const User = await dbService.find(UserModel, { _id: decodedToken._id });
+            if (!User[0]) throw Error
             req.user = User[0];
             return next();
             // if(User[0].role == "teacher" || User[0].role == "admin"){
@@ -26,12 +27,12 @@ module.exports = (...args) => async (req, res, next) => {
         }
         if (args[0] === 'isUser') {
             // if(decodedToken.role !== "user") throw Error
-            const User = await dbService.find(UserModel, { _id: decodedToken._id});
-            if(!User[0]) throw Error
-            if(User[0].role === "user" && User[0].isVerified == true && User[0].isPasswordSet == true ){
+            const User = await dbService.find(UserModel, { _id: decodedToken._id });
+            if (!User[0]) throw Error
+            if (User[0].role === "user" && User[0].isVerified == true && User[0].isPasswordSet == true) {
                 req.user = User[0];
                 return next();
-            }else{
+            } else {
                 throw Error
             }
         }
@@ -40,10 +41,16 @@ module.exports = (...args) => async (req, res, next) => {
             // console.log('User', User)
             // req.user = User.dataValues;
             // return next();
-            const User = await dbService.find(UserModel, { _id: decodedToken._id});
-            if(!User[0]) throw Error
+            const User = await dbService.find(UserModel, { _id: decodedToken._id });
+            if (!User[0]) throw Error
             req.user = User[0];
             return next();
+        }
+        if (args[0] === 'is verified') {
+            const User = await dbService.find(UserModel, { _id: decodedToken._id })
+            if (!User[0]) throw Error
+            req.user = User[0];
+            return next()
         }
         throw "Auth Failed"
     } catch (error) {
