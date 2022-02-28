@@ -2,15 +2,15 @@
 // ------------------ Services -------------------------
 const ValidatorService = require('../service/validator/mobileValidator');
 const validatorService = new ValidatorService();
-// const DbService = require('../../services/DB.services');
-// const dbService = new DbService();
+const DbService = require('../service/validator/DbService');
+const dbService = new DbService();
 const { UploadService } = require('../service/validator/uploadService');
 const uploadService = new UploadService();
 // ------------------ Model -------------------------
-// const { UserModel,UserActivityModel } = require('../../models');
+const { UserModel, UserActivityModel } = require('../model');
 // ------------------ constant -------------------------
 const constant = require('../db/constant');
-// const mobileMessages = require('../../db/messages/mobile.messages');
+const mobileMessages = require('../db/message/mobile');
 
 module.exports = UserController = function () {
     this.Get = async (req, res) => {
@@ -26,17 +26,17 @@ module.exports = UserController = function () {
     this.Update = async (req, res) => {
         try {
             console.log('req.file', req.file)
-            if(req.body.linkedAccount && typeof req.body.linkedAccount == "string"){ req.body.linkedAccount = JSON.parse(req.body.linkedAccount) };
-            if(req.body.cliftonStrenghts && typeof req.body.cliftonStrenghts == "string"){ req.body.cliftonStrenghts = JSON.parse(req.body.cliftonStrenghts) };
-            if(req.body.disc && typeof req.body.disc == "string"){ req.body.disc = JSON.parse(req.body.disc) };
-            if(req.body.gift && typeof req.body.gift == "string"){ req.body.gift = JSON.parse(req.body.gift) };
+            if (req.body.linkedAccount && typeof req.body.linkedAccount == "string") { req.body.linkedAccount = JSON.parse(req.body.linkedAccount) };
+            if (req.body.cliftonStrenghts && typeof req.body.cliftonStrenghts == "string") { req.body.cliftonStrenghts = JSON.parse(req.body.cliftonStrenghts) };
+            if (req.body.disc && typeof req.body.disc == "string") { req.body.disc = JSON.parse(req.body.disc) };
+            if (req.body.gift && typeof req.body.gift == "string") { req.body.gift = JSON.parse(req.body.gift) };
             const validate = await validatorService.schemas.MobUserUpdate.validate(req.body);
             if (validate.error) { throw validate.error.details[0].message };
             // if(req.file && req.file.originalname){
             //     req.file.originalname = `${Date.now()}${req.file.originalname.replaceAll(' ','_').replaceAll('#', '_')}`;
             // }
             validate.value.profileImage = req.file.path
-            update = await dbService.update(UserModel,{_id:req.user._id},validate.value);
+            update = await dbService.update(UserModel, { _id: req.user._id }, validate.value);
             return res.status(200).json({ success: true, message: mobileMessages.USER_UPDATE_SUCCESSFULLY, data: validate.value });
         } catch (err) {
             console.log('err', err)
@@ -46,18 +46,18 @@ module.exports = UserController = function () {
     this.Favourite = async (req, res) => {
         try {
             let favourite;
-            let favouriteCousesList=[];
+            let favouriteCousesList = [];
             let agg = [
-                { $match: {userId: mongoose.Types.ObjectId(req.user._id),activityType:"favourite"} },
+                { $match: { userId: mongoose.Types.ObjectId(req.user._id), activityType: "favourite" } },
                 courseAgg(req.user._id),
                 { $unwind: "$course" },
                 {
-                    $project:{
-                        course:1,
+                    $project: {
+                        course: 1,
                     }
                 }
             ];
-            favourite = await dbService.aggregate(UserActivityModel,agg);
+            favourite = await dbService.aggregate(UserActivityModel, agg);
             for (let i = 0; i < favourite.length; i++) {
                 favouriteCousesList.push(favourite[i].course)
             }
@@ -70,18 +70,18 @@ module.exports = UserController = function () {
     this.Bookmark = async (req, res) => {
         try {
             let bookmark;
-            let bookmarkCousesList=[];
+            let bookmarkCousesList = [];
             let agg = [
-                { $match: {userId: mongoose.Types.ObjectId(req.user._id),activityType:"bookmark"} },
+                { $match: { userId: mongoose.Types.ObjectId(req.user._id), activityType: "bookmark" } },
                 await courseAgg(req.user._id),
                 { $unwind: "$course" },
                 {
-                    $project:{
-                        course:1,
+                    $project: {
+                        course: 1,
                     }
                 }
             ];
-            bookmark = await dbService.aggregate(UserActivityModel,agg);
+            bookmark = await dbService.aggregate(UserActivityModel, agg);
             for (let i = 0; i < bookmark.length; i++) {
                 bookmarkCousesList.push(bookmark[i].course)
             }
@@ -95,18 +95,18 @@ module.exports = UserController = function () {
     this.Like = async (req, res) => {
         try {
             let like;
-            let likeCousesList=[];
+            let likeCousesList = [];
             let agg = [
-                { $match: {userId: mongoose.Types.ObjectId(req.user._id),activityType:"like"} },
+                { $match: { userId: mongoose.Types.ObjectId(req.user._id), activityType: "like" } },
                 courseAgg(req.user._id),
                 { $unwind: "$course" },
                 {
-                    $project:{
-                        course:1,
+                    $project: {
+                        course: 1,
                     }
                 }
             ];
-            like = await dbService.aggregate(UserActivityModel,agg);
+            like = await dbService.aggregate(UserActivityModel, agg);
             for (let i = 0; i < like.length; i++) {
                 likeCousesList.push(like[i].course)
             }
@@ -190,7 +190,7 @@ function courseAgg(userId) {
                 { $addFields: { totalNoOfWeek: { $size: "$weeks" } } },
                 { $addFields: { totalNoOfLesson: { $sum: "$weeks.NoOfLesson" } } },
                 { $addFields: { totalNoOfChapter: { $sum: "$weeks.totalNoOfChapter" } } },
-                { $addFields: { totalLength:  { $sum: "$weeks.totalLength" } }  },
+                { $addFields: { totalLength: { $sum: "$weeks.totalLength" } } },
                 {
                     $lookup: {
                         from: "useractivities",
@@ -199,7 +199,7 @@ function courseAgg(userId) {
                             {
                                 $match: {
                                     $expr: {
-                                        $and: [{ $eq: ["$courseId", "$$courseId"] },{ $eq: ["$activityType", "like"] },{ $eq: ["$userId", userId] }],
+                                        $and: [{ $eq: ["$courseId", "$$courseId"] }, { $eq: ["$activityType", "like"] }, { $eq: ["$userId", userId] }],
                                     },
                                 },
                             },
@@ -215,7 +215,7 @@ function courseAgg(userId) {
                             {
                                 $match: {
                                     $expr: {
-                                        $and: [{ $eq: ["$courseId", "$$courseId"] },{ $eq: ["$activityType", "bookmark"] },{ $eq: ["$userId", userId] }],
+                                        $and: [{ $eq: ["$courseId", "$$courseId"] }, { $eq: ["$activityType", "bookmark"] }, { $eq: ["$userId", userId] }],
                                     },
                                 },
                             },
@@ -231,7 +231,7 @@ function courseAgg(userId) {
                             {
                                 $match: {
                                     $expr: {
-                                        $and: [{ $eq: ["$courseId", "$$courseId"] },{ $eq: ["$activityType", "favourite"] },{ $eq: ["$userId", userId] }],
+                                        $and: [{ $eq: ["$courseId", "$$courseId"] }, { $eq: ["$activityType", "favourite"] }, { $eq: ["$userId", userId] }],
                                     },
                                 },
                             },
@@ -250,10 +250,10 @@ function courseAgg(userId) {
                         "updatedAt": 1,
                         "views": 1,
                         "rating": 1,
-                        "like":1,
-                        "isliked":{ $cond: { if: { $gte: [ {$size:"$likeArray"}, 1 ] }, then: true, else: false } },
-                        "isbookmarked":{ $cond: { if: { $gte: [ {$size:"$bookmarkArray"}, 1 ] }, then: true, else: false } },
-                        "isfavourite":{ $cond: { if: { $gte: [ {$size:"$favouriteArray"}, 1 ] }, then: true, else: false } },
+                        "like": 1,
+                        "isliked": { $cond: { if: { $gte: [{ $size: "$likeArray" }, 1] }, then: true, else: false } },
+                        "isbookmarked": { $cond: { if: { $gte: [{ $size: "$bookmarkArray" }, 1] }, then: true, else: false } },
+                        "isfavourite": { $cond: { if: { $gte: [{ $size: "$favouriteArray" }, 1] }, then: true, else: false } },
                     }
                 },
             ],

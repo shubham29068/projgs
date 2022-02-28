@@ -8,7 +8,7 @@ const { Auth } = require('../middleware/index');
 router.route('/')
     .get(Auth('userverified'), userController.Get)
     .put(Auth('userverified'), upload.single('profileImage'), userController.Update)
-    // .put(Auth('userverified'),UserController.Get)
+ 
 
 // router.route('/favourite')
 //     .get(Auth('isUser'),userController.Favourite);
