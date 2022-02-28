@@ -1,3 +1,15 @@
 module.exports = {
-    UserModel: require('./user')
+    UserModel: require('./user'),
+    // CourseModel: require('./course'),
+    // WeekModel: require('./week'),
+    // LessonModel: require('./lesson'),
+    // MissionModel: require('./mission'),
+    // ChapterModel: require('./chapter'),
+    // MissionContentModel: require('./missionContent'),
+    UserActivityModel: require('./userActivity'),
+    // CourseStatusModel: require('./courseStatus'),
+    // UserCourseStatusModel: require('./userCourseStatus'),
+    // DiscussionModel: require('./discussion'),
+    PostModel: require('./post'),
+    // CommentModel: require('./comment'),
 }
