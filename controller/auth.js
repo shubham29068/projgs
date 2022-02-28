@@ -114,7 +114,7 @@ module.exports = AuthController = function () {
     this.forgetPassword = async (req, res) => {
         try {
             var val = Math.floor(1000 + Math.random() * 9000);
-            console.log(val);
+            console.log('val', val)
             req.body.otp = randomString.generate({ length: 4, charset: 'numeric' })
             const validate = await validatorService.schemas.MobForgetPassword.validate(req.body);
             if (validate.error) { throw validate.error.details[0].message };
@@ -130,7 +130,7 @@ module.exports = AuthController = function () {
             LMS Team</p>
             `;
             let subject = `ForgetPassword`
-            let test  = await mailService.send({ email: isExist[0].email, html: HTML, subject: subject });
+            let test = await mailService.send({ email: isExist[0].email, html: HTML, subject: subject });
             return res.status(200).json({ success: true, message: mobileMessages.AUTH_FORGET_PASSWORD/* , data: update  */ });
         } catch (err) {
             console.log('err', err)
@@ -140,10 +140,16 @@ module.exports = AuthController = function () {
     this.verifyOTP = async (req, res) => {
         try {
             const validate = await validatorService.schemas.MobVerifyOTP.validate(req.body);
+            console.log('validate', validate)
             if (validate.error) { throw validate.error.details[0].message };
             const isExist = await dbService.find(UserModel, { email: validate.value.email, role: 'user' });
+            
             if (!isExist[0]) { throw mobileMessages.USER_NOT_EXIST };
+            console.log('isExist', isExist)
+
             if (isExist[0].otp != validate.value.otp) { throw mobileMessages.AUTH_INVALID_OTP }
+
+
             const update = await dbService.update(UserModel, { _id: isExist[0]._id }, { otp: "", isOtpVerified: true });
             return res.status(200).json({ success: true, message: mobileMessages.AUTH_VERIFY_OTP/* , data: update */ });
         } catch (err) {
