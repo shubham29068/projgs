@@ -79,6 +79,7 @@ const Mobile = {
     REPLY_SENT: "Replyed successfully",
     // Like
     Like: "Like successfully",
+    UNLIKE:"Unlike successfully",
     COMMENT: "Comment Add successfully",
 }
 module.exports = Mobile;

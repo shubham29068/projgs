@@ -11,5 +11,5 @@ module.exports = {
     // UserCourseStatusModel: require('./userCourseStatus'),
     // DiscussionModel: require('./discussion'),
     PostModel: require('./post'),
-    // CommentModel: require('./comment'),
+    CommentModel: require('./comment'),
 }

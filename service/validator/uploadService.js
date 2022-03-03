@@ -1,5 +1,5 @@
 
-// const constant = require('../db/constant')
+const constant = require('../../db/constant')
 const multer = require('multer');
 const path = require('path');
 // const inMemoryStorage = multer.memoryStorage();
@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage
 })
+
 
 const azureStorage = require('azure-storage');
 // const getStream = require("into-stream");

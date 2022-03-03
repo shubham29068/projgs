@@ -10,6 +10,7 @@ const aggregationService = new AggregationService();
 const { PostModel, UserActivityModel, CommentModel } = require('../model');
 // ------------------ constant AND Messages --------------------------
 const mobileMessages = require('../db/message/mobile');
+const { COMMENT } = require('../db/message/mobile');
 
 module.exports = PostController = function () {
     this.add = async (req, res) => {
@@ -188,8 +189,9 @@ module.exports = PostController = function () {
             const validate = await validatorService.schemas.MobPostComment.validate(req.body);
             if (validate.error) { throw validate.error.details[0].message };
             validate.value.userId = req.user._id;
-            let comment = await dbService.create(CommentModel, validate.value);
-            return res.status(200).json({ success: true, message: mobileMessages.COMMENT, data: comment });
+            let Comment = await dbService.create(CommentModel, { postId: validate.value.postId, userId: validate.value.userId, comment: validate.value.comment });
+
+            return res.status(200).json({ success: true, message: mobileMessages.COMMENT, data: Comment });
         } catch (err) {
             console.log('err', err)
             return res.status(201).json({ success: false, message: err });

@@ -25,19 +25,20 @@ module.exports = UserController = function () {
     }
     this.Update = async (req, res) => {
         try {
-            console.log('req.file', req.file)
             if (req.body.linkedAccount && typeof req.body.linkedAccount == "string") { req.body.linkedAccount = JSON.parse(req.body.linkedAccount) };
             if (req.body.cliftonStrenghts && typeof req.body.cliftonStrenghts == "string") { req.body.cliftonStrenghts = JSON.parse(req.body.cliftonStrenghts) };
             if (req.body.disc && typeof req.body.disc == "string") { req.body.disc = JSON.parse(req.body.disc) };
             if (req.body.gift && typeof req.body.gift == "string") { req.body.gift = JSON.parse(req.body.gift) };
             const validate = await validatorService.schemas.MobUserUpdate.validate(req.body);
             if (validate.error) { throw validate.error.details[0].message };
-            // if(req.file && req.file.originalname){
-            //     req.file.originalname = `${Date.now()}${req.file.originalname.replaceAll(' ','_').replaceAll('#', '_')}`;
+            // if (req.file && req.file.originalname) {
+            //     req.file.originalname = `${Date.now()}${req.file.originalname.replaceAll(' ', '_').replaceAll('#', '_')}`;
             // }
-            validate.value.profileImage = req.file.path
+            // console.log('validate.value', validate.value)
+            // if (req.file && req.file.path) validate.value.profileImage = req.file.path;
+            // console.log('req.file', req.files)
             update = await dbService.update(UserModel, { _id: req.user._id }, validate.value);
-            return res.status(200).json({ success: true, message: mobileMessages.USER_UPDATE_SUCCESSFULLY, data: validate.value });
+            return res.status(200).json({ success: true, message: mobileMessages.USER_UPDATE_SUCCESSFULLY, data: validate.value ? validate.value : "no data" });
         } catch (err) {
             console.log('err', err)
             return res.status(201).json({ success: false, message: err });
